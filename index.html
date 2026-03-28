@@ -559,11 +559,9 @@
   }
 
   .reveal {
-    opacity: 1; transform: none;
-    transition: opacity 0.6s, transform 0.6s;
+    opacity: 1;
+    transform: none;
   }
-  .reveal.hidden { opacity: 0; transform: translateY(24px); }
-  .reveal.hidden.visible { opacity: 1; transform: none; }
 
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
@@ -1005,26 +1003,6 @@
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 20);
   });
-
-  // Reveal on scroll - add hidden class first, then observe
-  const reveals = document.querySelectorAll('.reveal');
-  reveals.forEach(el => el.classList.add('hidden'));
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-
-  reveals.forEach(el => observer.observe(el));
-
-  // Fallback: if observer never fires, show everything after 1s
-  setTimeout(() => {
-    reveals.forEach(el => el.classList.add('visible'));
-  }, 1000);
 
   // Form submit
   function handleSubmit(e) {
