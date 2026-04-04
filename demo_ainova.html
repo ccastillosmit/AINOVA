@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ainova — Demo: Planta CentroMet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green: #1D9E75; --green-d: #0F6E56; --green-l: #E1F5EE; --green-m: #5DCAA5;
+  --ink: #0e1a14; --muted: #6b7e74; --surface: #f7faf8; --white: #fff;
+  --red: #E24B4A; --red-l: #FCEBEB; --amber: #BA7517; --amber-l: #FAEEDA;
+  --border: rgba(29,158,117,0.12);
+  --serif: 'DM Serif Display', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+}
+body { font-family: var(--sans); background: var(--ink); color: var(--white); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+/* ── HEADER ── */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 40px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(14,26,20,0.95); backdrop-filter: blur(12px);
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-mark { width: 32px; height: 32px; background: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.logo-mark svg { width: 16px; height: 16px; }
+.logo-name { font-size: 13px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.8); }
+.demo-badge { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; background: rgba(29,158,117,0.15); border: 1px solid rgba(29,158,117,0.3); color: var(--green-m); padding: 4px 12px; border-radius: 20px; }
+
+/* ── STEP NAV ── */
+.step-nav {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; padding: 24px 40px; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.step-item {
+  display: flex; align-items: center; gap: 0; cursor: pointer;
+}
+.step-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: 8px;
+  font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.3);
+  transition: all 0.25s; white-space: nowrap;
+}
+.step-pill.active { background: rgba(29,158,117,0.15); color: var(--green-m); border: 1px solid rgba(29,158,117,0.25); }
+.step-pill:hover:not(.active) { color: rgba(255,255,255,0.6); }
+.step-num { font-family: var(--serif); font-size: 14px; font-style: italic; }
+.step-connector { width: 32px; height: 1px; background: rgba(255,255,255,0.08); }
+
+/* ── MAIN ── */
+main { min-height: calc(100vh - 130px); }
+.step-panel { display: none; padding: 48px 40px; max-width: 1100px; margin: 0 auto; animation: fadeIn 0.4s ease; }
+.step-panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.panel-label { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--green-m); margin-bottom: 12px; }
+.panel-title { font-family: var(--serif); font-size: clamp(28px, 4vw, 46px); font-weight: 400; line-height: 1.1; margin-bottom: 16px; }
+.panel-title em { font-style: italic; color: var(--green-m); }
+.panel-sub { font-size: 16px; font-weight: 300; color: rgba(255,255,255,0.55); line-height: 1.65; max-width: 580px; margin-bottom: 40px; }
+
+/* ── CARDS ── */
+.card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 28px; }
+.card-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 16px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* ── STEP 1: EL PROBLEMA ── */
+.excel-table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: 'Courier New', monospace; }
+.excel-table th { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); font-weight: 400; padding: 6px 10px; text-align: left; border: 1px solid rgba(255,255,255,0.06); font-size: 11px; letter-spacing: 0.04em; }
+.excel-table td { padding: 7px 10px; border: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); }
+.excel-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.excel-table .formula { color: #5DCAA5; }
+.excel-table .manual { color: #FAC775; }
+.excel-table .error { color: #F09595; }
+.pain-list { display: flex; flex-direction: column; gap: 14px; }
+.pain-item { display: flex; gap: 14px; align-items: flex-start; padding: 16px; background: rgba(226,75,74,0.06); border: 1px solid rgba(226,75,74,0.15); border-radius: 10px; }
+.pain-icon { width: 32px; height: 32px; background: rgba(226,75,74,0.12); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+.pain-text h4 { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.9); margin-bottom: 4px; }
+.pain-text p { font-size: 12px; font-weight: 300; color: rgba(255,255,255,0.45); line-height: 1.5; }
+
+/* ── STEP 2: GEMELO DIGITAL ── */
+.plant-viz { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 32px; }
+.plant-row { display: flex; gap: 12px; align-items: stretch; margin-bottom: 16px; }
+.station { flex: 1; border-radius: 10px; padding: 14px 12px; text-align: center; position: relative; transition: all 0.3s; }
+.station-name { font-size: 11px; font-weight: 500; letter-spacing: 0.04em; margin-bottom: 6px; }
+.station-time { font-family: var(--serif); font-size: 22px; font-style: italic; margin-bottom: 4px; }
+.station-unit { font-size: 10px; color: rgba(255,255,255,0.4); }
+.station-bar { height: 4px; border-radius: 2px; margin-top: 10px; }
+.station.ok { background: rgba(29,158,117,0.1); border: 1px solid rgba(29,158,117,0.2); }
+.station.ok .station-name { color: var(--green-m); }
+.station.ok .station-time { color: var(--white); }
+.station.ok .station-bar { background: var(--green); }
+.station.bottleneck { background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.35); }
+.station.bottleneck .station-name { color: #F09595; }
+.station.bottleneck .station-time { color: #F09595; }
+.station.bottleneck .station-bar { background: var(--red); }
+.station.bottleneck::after { content: '⚠ CUELLO'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 9px; letter-spacing: 0.08em; background: var(--red); color: white; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+.station.warning { background: rgba(186,117,23,0.1); border: 1px solid rgba(186,117,23,0.25); }
+.station.warning .station-name { color: #FAC775; }
+.station.warning .station-time { color: #FAC775; }
+.station.warning .station-bar { background: var(--amber); }
+.flow-arrow-h { display: flex; align-items: center; justify-content: center; width: 24px; flex-shrink: 0; color: rgba(255,255,255,0.15); font-size: 18px; }
+.line-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 10px; }
+.resource-shared { background: rgba(186,117,23,0.08); border: 1px solid rgba(186,117,23,0.2); border-radius: 10px; padding: 14px 16px; margin-top: 16px; display: flex; align-items: center; gap: 12px; }
+.resource-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+.resource-text { font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.4; }
+.resource-text strong { color: #FAC775; }
+.sim-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-top: 20px; }
+.sim-stat { text-align: center; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; }
+.sim-stat-val { font-family: var(--serif); font-size: 26px; font-style: italic; color: var(--white); }
+.sim-stat-val.red { color: #F09595; }
+.sim-stat-val.green { color: var(--green-m); }
+.sim-stat-label { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; line-height: 1.3; }
+
+/* ── STEP 3: INTEGRACIÓN ── */
+.flow-integration { display: flex; flex-direction: column; gap: 16px; }
+.flow-step { display: flex; gap: 16px; align-items: flex-start; }
+.flow-step-num { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 14px; font-style: italic; flex-shrink: 0; margin-top: 2px; }
+.flow-step-num.teal { background: rgba(29,158,117,0.15); color: var(--green-m); border: 1px solid rgba(29,158,117,0.25); }
+.flow-step-num.amber { background: rgba(186,117,23,0.15); color: #FAC775; border: 1px solid rgba(186,117,23,0.25); }
+.flow-step-num.purple { background: rgba(83,74,183,0.15); color: #AFA9EC; border: 1px solid rgba(83,74,183,0.25); }
+.flow-step-content h4 { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.9); margin-bottom: 4px; }
+.flow-step-content p { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.45); line-height: 1.55; }
+.flow-connector { width: 1px; height: 20px; background: rgba(255,255,255,0.08); margin-left: 15px; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table th { background: rgba(29,158,117,0.1); color: var(--green-m); font-weight: 500; padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(29,158,117,0.2); font-size: 11px; letter-spacing: 0.04em; }
+.data-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); font-size: 12px; }
+.data-table .highlight { color: #FAC775; font-weight: 500; }
+.data-table .critical { color: #F09595; }
+
+/* ── STEP 4: ESCENARIOS ── */
+.scenario-controls { background: rgba(29,158,117,0.05); border: 1px solid rgba(29,158,117,0.15); border-radius: 14px; padding: 28px; }
+.control-group { margin-bottom: 24px; }
+.control-label { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.7); margin-bottom: 10px; letter-spacing: 0.02em; }
+.slider-row { display: flex; align-items: center; gap: 16px; }
+.slider-row input[type=range] { flex: 1; accent-color: var(--green); height: 4px; }
+.slider-val { font-family: var(--serif); font-size: 20px; font-style: italic; color: var(--green-m); min-width: 60px; text-align: right; }
+.result-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+.result-card { border-radius: 12px; padding: 20px; }
+.result-card.positive { background: rgba(29,158,117,0.1); border: 1px solid rgba(29,158,117,0.25); }
+.result-card.negative { background: rgba(226,75,74,0.08); border: 1px solid rgba(226,75,74,0.2); }
+.result-card.neutral { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+.result-card.highlight-big { background: rgba(29,158,117,0.15); border: 2px solid rgba(29,158,117,0.4); grid-column: span 2; }
+.result-label { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 0.04em; margin-bottom: 6px; }
+.result-val { font-family: var(--serif); font-size: 32px; font-style: italic; line-height: 1; }
+.result-val.green { color: var(--green-m); }
+.result-val.red { color: #F09595; }
+.result-val.white { color: var(--white); }
+.result-sub { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 6px; line-height: 1.4; }
+.wow-badge { display: inline-block; background: var(--green); color: white; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; }
+
+/* ── STEP 5: DASHBOARD ── */
+.dashboard-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+.kpi { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 18px 16px; }
+.kpi-label { font-size: 11px; color: rgba(255,255,255,0.35); margin-bottom: 6px; }
+.kpi-val { font-family: var(--serif); font-size: 28px; font-style: italic; color: var(--white); line-height: 1; }
+.kpi-val span { color: var(--green-m); }
+.kpi-delta { font-size: 11px; margin-top: 4px; }
+.kpi-delta.up { color: var(--green-m); }
+.kpi-delta.down { color: #F09595; }
+.chart-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.chart-bar-label { font-size: 12px; color: rgba(255,255,255,0.5); min-width: 100px; }
+.chart-bar-track { flex: 1; height: 24px; background: rgba(255,255,255,0.04); border-radius: 4px; overflow: hidden; }
+.chart-bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 10px; font-size: 11px; font-weight: 500; transition: width 0.8s ease; }
+.chart-bar-fill.green { background: rgba(29,158,117,0.5); color: var(--green-m); }
+.chart-bar-fill.red { background: rgba(226,75,74,0.35); color: #F09595; }
+.chart-bar-fill.amber { background: rgba(186,117,23,0.4); color: #FAC775; }
+.alert-row { display: flex; gap: 10px; align-items: center; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; font-size: 13px; }
+.alert-row.green { background: rgba(29,158,117,0.1); border: 1px solid rgba(29,158,117,0.2); color: var(--green-m); }
+.alert-row.amber { background: rgba(186,117,23,0.1); border: 1px solid rgba(186,117,23,0.2); color: #FAC775; }
+.alert-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.alert-dot.green { background: var(--green); }
+.alert-dot.amber { background: var(--amber); }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav { display: flex; justify-content: space-between; align-items: center; padding: 32px 40px; border-top: 1px solid rgba(255,255,255,0.06); max-width: 1100px; margin: 0 auto; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; font-family: var(--sans); font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
+.btn-primary { background: var(--green); color: white; }
+.btn-primary:hover { background: var(--green-d); }
+.btn-ghost { background: transparent; color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12); }
+.btn-ghost:hover { color: white; border-color: rgba(255,255,255,0.3); }
+.step-indicator { font-size: 12px; color: rgba(255,255,255,0.3); }
+
+@media(max-width:700px){
+  .two-col,.three-col,.sim-stats,.result-grid,.dashboard-grid{grid-template-columns:1fr;}
+  .step-nav{gap:4px;} .step-connector{width:12px;}
+  .step-pill span.step-text{display:none;}
+  header{padding:16px 20px;} .step-panel{padding:32px 20px;}
+  .bottom-nav{padding:24px 20px;}
+  .result-card.highlight-big{grid-column:span 1;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 14L5 8.5L7 8.5L7 3.5L9 3.5L9 8.5L11 8.5Z" fill="white"/><circle cx="8" cy="2" r="1.4" fill="white"/></svg>
+    </div>
+    <span class="logo-name">Ainova</span>
+  </div>
+  <div class="demo-badge">Demo — Caso CentroMet</div>
+</header>
+
+<nav class="step-nav" id="stepNav">
+  <div class="step-item" onclick="goTo(1)">
+    <div class="step-pill active" id="pill-1"><span class="step-num">1</span><span class="step-text">El problema</span></div>
+  </div>
+  <div class="step-connector"></div>
+  <div class="step-item" onclick="goTo(2)">
+    <div class="step-pill" id="pill-2"><span class="step-num">2</span><span class="step-text">Gemelo digital</span></div>
+  </div>
+  <div class="step-connector"></div>
+  <div class="step-item" onclick="goTo(3)">
+    <div class="step-pill" id="pill-3"><span class="step-num">3</span><span class="step-text">Integración</span></div>
+  </div>
+  <div class="step-connector"></div>
+  <div class="step-item" onclick="goTo(4)">
+    <div class="step-pill" id="pill-4"><span class="step-num">4</span><span class="step-text">¿Qué pasa si...?</span></div>
+  </div>
+  <div class="step-connector"></div>
+  <div class="step-item" onclick="goTo(5)">
+    <div class="step-pill" id="pill-5"><span class="step-num">5</span><span class="step-text">Dashboard</span></div>
+  </div>
+</nav>
+
+<main>
+
+<!-- PASO 1: EL PROBLEMA -->
+<div class="step-panel active" id="panel-1">
+  <div class="panel-label">Situación actual · CentroMet S.A.</div>
+  <h1 class="panel-title">Así gestionás<br><em>tu planta hoy.</em></h1>
+  <p class="panel-sub">Planta metalúrgica, Córdoba. 2 líneas de producción, 2 turnos diarios. Planificación operativa y financiera en Excel.</p>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-label">Planilla de planificación — semana actual</div>
+      <table class="excel-table">
+        <tr><th>Línea</th><th>Turno</th><th>Piezas plan</th><th>Piezas real</th><th>Desvío</th><th>Costo/u</th></tr>
+        <tr><td>Línea 1</td><td>Mañana</td><td>480</td><td class="manual">471</td><td class="formula">-9</td><td>$2.340</td></tr>
+        <tr><td>Línea 1</td><td>Tarde</td><td>480</td><td class="manual">465</td><td class="formula">-15</td><td>$2.340</td></tr>
+        <tr><td>Línea 2</td><td>Mañana</td><td>320</td><td class="error">261</td><td class="error">-59</td><td>$3.120</td></tr>
+        <tr><td>Línea 2</td><td>Tarde</td><td>320</td><td class="error">248</td><td class="error">-72</td><td>$3.120</td></tr>
+        <tr><td colspan="2"><strong>TOTAL</strong></td><td><strong>1.600</strong></td><td class="error"><strong>1.445</strong></td><td class="error"><strong>-155</strong></td><td>—</td></tr>
+      </table>
+      <div style="margin-top:12px; font-size:11px; color:rgba(255,255,255,0.25);">
+        <span style="color:#FAC775">■</span> Ingreso manual &nbsp;
+        <span style="color:#5DCAA5">■</span> Fórmula &nbsp;
+        <span style="color:#F09595">■</span> Desvío no explicado
+      </div>
+    </div>
+
+    <div class="pain-list">
+      <div class="pain-item">
+        <div class="pain-icon">?</div>
+        <div class="pain-text">
+          <h4>Línea 2 produce 23% menos — nadie sabe por qué</h4>
+          <p>El desvío existe hace 3 meses. Se asume que "la máquina de corte es lenta" pero no hay datos que lo confirmen.</p>
+        </div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-icon">↻</div>
+        <div class="pain-text">
+          <h4>Cada cambio tarda 2–3 días en verse reflejado</h4>
+          <p>Modificar un turno, agregar un recurso o cambiar una velocidad implica actualizar múltiples planillas a mano.</p>
+        </div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-icon">$</div>
+        <div class="pain-text">
+          <h4>El impacto financiero se calcula por separado — y tarde</h4>
+          <p>Operaciones y finanzas trabajan con archivos distintos. Cuando los números coinciden, ya es demasiado tarde para actuar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PASO 2: GEMELO DIGITAL -->
+<div class="step-panel" id="panel-2">
+  <div class="panel-label">Simulación de procesos · Ainova</div>
+  <h1 class="panel-title">El gemelo digital<br><em>de tu planta.</em></h1>
+  <p class="panel-sub">Modelamos cada estación, cada recurso y cada turno. La simulación revela lo que los datos históricos no pueden ver.</p>
+
+  <div class="plant-viz">
+    <div class="line-label">Línea 1 — Turno mañana</div>
+    <div class="plant-row">
+      <div class="station ok">
+        <div class="station-name">Corte</div>
+        <div class="station-time">4.2</div>
+        <div class="station-unit">min/pieza</div>
+        <div class="station-bar" style="width:58%;"></div>
+      </div>
+      <div class="flow-arrow-h">→</div>
+      <div class="station ok">
+        <div class="station-name">Troquelado</div>
+        <div class="station-time">6.1</div>
+        <div class="station-unit">min/pieza</div>
+        <div class="station-bar" style="width:72%;"></div>
+      </div>
+      <div class="flow-arrow-h">→</div>
+      <div class="station warning">
+        <div class="station-name">Control QC</div>
+        <div class="station-time">3.8</div>
+        <div class="station-unit">min/pieza</div>
+        <div class="station-bar" style="width:45%;"></div>
+      </div>
+      <div class="flow-arrow-h">→</div>
+      <div class="station ok">
+        <div class="station-name">Despacho</div>
+        <div class="station-time">2.1</div>
+        <div class="station-unit">min/pieza</div>
+        <div class="station-bar" style="width:30%;"></div>
+      </div>
+    </div>
+
+    <div class="line-label" style="margin-top:24px;">Línea 2 — Turno mañana</div>
+    <div class="plant-row">
+      <div class="station ok">
+        <div class="station-name">Corte</div>
+        <div class="station-time">4.5</div>
+        <div class="station-unit">min/pieza</div>
+        <div class="station-bar" style="width:55%;"></div>
+      </div>
+      <div class="flow-arrow-h">→</div>
+      <div class="station ok">
+        <div class="station-name">Soldadura</div>
+        <div class="station-time">8.3</div>
+        <div class="station-unit">min/pieza</div>
+        <div class="station-bar" style="width:80%;"></div>
+      </div>
+      <div class="flow-arrow-h">→</div>
+      <div class="station bottleneck">
+        <div class="station-name">Control QC</div>
+        <div class="station-time">47 min</div>
+        <div class="station-unit">tiempo de espera</div>
+        <div class="station-bar" style="width:95%;"></div>
+      </div>
+      <div class="flow-arrow-h">→</div>
+      <div class="station ok">
+        <div class="station-name">Despacho</div>
+        <div class="station-time">2.1</div>
+        <div class="station-unit">min/pieza</div>
+        <div class="station-bar" style="width:30%;"></div>
+      </div>
+    </div>
+
+    <div class="resource-shared">
+      <div class="resource-dot"></div>
+      <div class="resource-text"><strong>Recurso compartido detectado:</strong> El operario de Control de Calidad atiende ambas líneas. Cuando Línea 1 pica en horario pico, Línea 2 espera 47 minutos por turno. <strong>La máquina de corte no es el problema.</strong></div>
+    </div>
+
+    <div class="sim-stats">
+      <div class="sim-stat"><div class="sim-stat-val red">47'</div><div class="sim-stat-label">espera promedio en QC, Línea 2</div></div>
+      <div class="sim-stat"><div class="sim-stat-val red">23%</div><div class="sim-stat-label">pérdida de capacidad productiva</div></div>
+      <div class="sim-stat"><div class="sim-stat-val">1.000+</div><div class="sim-stat-label">iteraciones simuladas para validar</div></div>
+      <div class="sim-stat"><div class="sim-stat-val green">100%</div><div class="sim-stat-label">diagnóstico sin parar la planta</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PASO 3: INTEGRACIÓN -->
+<div class="step-panel" id="panel-3">
+  <div class="panel-label">Integración · proceso + finanzas</div>
+  <h1 class="panel-title">La simulación habla<br><em>el idioma del dinero.</em></h1>
+  <p class="panel-sub">Los datos del gemelo digital alimentan automáticamente el modelo financiero. Un solo modelo, una sola fuente de verdad.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-label">Output de simulación → input financiero</div>
+        <div class="flow-integration">
+          <div class="flow-step">
+            <div class="flow-step-num teal">1</div>
+            <div class="flow-step-content">
+              <h4>Simulación genera tabla de datos</h4>
+              <p>Tiempos reales por estación, uso de recursos, tiempos de espera por turno y por línea.</p>
+            </div>
+          </div>
+          <div class="flow-connector"></div>
+          <div class="flow-step">
+            <div class="flow-step-num amber">2</div>
+            <div class="flow-step-content">
+              <h4>Modelo financiero se actualiza solo</h4>
+              <p>Costo por recurso × tiempo simulado = costo real de producción. Sin fórmulas manuales.</p>
+            </div>
+          </div>
+          <div class="flow-connector"></div>
+          <div class="flow-step">
+            <div class="flow-step-num purple">3</div>
+            <div class="flow-step-content">
+              <h4>Escenarios en segundos</h4>
+              <p>Cambiar un parámetro operativo recalcula automáticamente el impacto financiero completo.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Tabla de integración — datos reales vs. anteriores</div>
+      <table class="data-table">
+        <tr><th>Variable</th><th>Excel anterior</th><th>Simulación</th></tr>
+        <tr><td>Capacidad L2/turno</td><td class="critical">320 u (plan)</td><td class="highlight">261 u (real)</td></tr>
+        <tr><td>Tiempo ocioso QC</td><td class="critical">No medido</td><td class="highlight">47 min/turno</td></tr>
+        <tr><td>Costo ociosidad/mes</td><td class="critical">No calculado</td><td class="highlight">$1.240.000</td></tr>
+        <tr><td>Piezas perdidas/mes</td><td class="critical">Estimado: ~200</td><td class="highlight">Exacto: 744</td></tr>
+        <tr><td>Ingreso no capturado</td><td class="critical">Desconocido</td><td class="highlight">$2.320.000/mes</td></tr>
+        <tr><td>Causa del desvío</td><td class="critical">"Máquina lenta"</td><td class="highlight">Recurso compartido</td></tr>
+      </table>
+      <div style="margin-top:14px; padding:12px; background:rgba(29,158,117,0.08); border:1px solid rgba(29,158,117,0.2); border-radius:8px; font-size:12px; color:rgba(255,255,255,0.6); line-height:1.5;">
+        La diferencia entre el plan y la realidad no estaba en la máquina. Estaba en un recurso humano compartido que ningún Excel podía detectar.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PASO 4: ESCENARIOS -->
+<div class="step-panel" id="panel-4">
+  <div class="panel-label">Análisis de escenarios · en tiempo real</div>
+  <h1 class="panel-title">¿Qué pasa si<br><em>agregamos un operario de QC?</em></h1>
+  <p class="panel-sub">Mové los sliders y el modelo recalcula el impacto operativo y financiero en tiempo real. Esto es lo que antes tardaba 3 días.</p>
+
+  <div class="two-col">
+    <div class="scenario-controls">
+      <div class="control-group">
+        <div class="control-label">Operarios de Control de Calidad</div>
+        <div class="slider-row">
+          <span style="font-size:12px;color:rgba(255,255,255,0.4);">1</span>
+          <input type="range" min="1" max="3" step="1" value="1" id="sliderQC" oninput="calcular()">
+          <span style="font-size:12px;color:rgba(255,255,255,0.4);">3</span>
+          <span class="slider-val" id="valQC">1</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="control-label">Turnos por día</div>
+        <div class="slider-row">
+          <span style="font-size:12px;color:rgba(255,255,255,0.4);">2</span>
+          <input type="range" min="2" max="3" step="1" value="2" id="sliderTurnos" oninput="calcular()">
+          <span style="font-size:12px;color:rgba(255,255,255,0.4);">3</span>
+          <span class="slider-val" id="valTurnos">2</span>
+        </div>
+      </div>
+      <div class="control-group" style="margin-bottom:0;">
+        <div class="control-label">Velocidad de línea 2 (%)</div>
+        <div class="slider-row">
+          <span style="font-size:12px;color:rgba(255,255,255,0.4);">80%</span>
+          <input type="range" min="80" max="110" step="5" value="100" id="sliderVel" oninput="calcular()">
+          <span style="font-size:12px;color:rgba(255,255,255,0.4);">110%</span>
+          <span class="slider-val" id="valVel">100%</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="result-grid" id="resultGrid">
+        <div class="result-card neutral">
+          <div class="result-label">Producción L2 / turno</div>
+          <div class="result-val white" id="rProd">261</div>
+          <div class="result-sub" id="rProdSub">unidades (situación actual)</div>
+        </div>
+        <div class="result-card neutral">
+          <div class="result-label">Espera en QC</div>
+          <div class="result-val red" id="rEspera">47 min</div>
+          <div class="result-sub" id="rEsperaSub">por turno · cuello activo</div>
+        </div>
+        <div class="result-card neutral">
+          <div class="result-label">Costo del operario extra</div>
+          <div class="result-val white" id="rCosto">$0</div>
+          <div class="result-sub">por mes</div>
+        </div>
+        <div class="result-card neutral">
+          <div class="result-label">Ingreso adicional</div>
+          <div class="result-val green" id="rIngreso">$0</div>
+          <div class="result-sub" id="rIngresoSub">recuperado por mes</div>
+        </div>
+        <div class="result-card highlight-big" id="rROICard">
+          <div class="wow-badge" id="rWow">ESTADO ACTUAL</div>
+          <div class="result-label">Resultado neto mensual</div>
+          <div class="result-val white" id="rNeto">–</div>
+          <div class="result-sub" id="rNetoSub">Sin cambios. La planta opera con 23% menos de capacidad.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PASO 5: DASHBOARD -->
+<div class="step-panel" id="panel-5">
+  <div class="panel-label">Dashboard integrado · visión ejecutiva</div>
+  <h1 class="panel-title">Lo que ves<br><em>de ahora en más.</em></h1>
+  <p class="panel-sub">Un panel único que combina los datos operativos de la simulación con los indicadores financieros. Actualizado automáticamente.</p>
+
+  <div class="dashboard-grid">
+    <div class="kpi"><div class="kpi-label">Producción mensual</div><div class="kpi-val"><span>8.740</span> u</div><div class="kpi-delta up">↑ 18% vs. escenario base</div></div>
+    <div class="kpi"><div class="kpi-label">Capacidad utilizada</div><div class="kpi-val"><span>94</span>%</div><div class="kpi-delta up">↑ desde 76%</div></div>
+    <div class="kpi"><div class="kpi-label">Ingreso mensual</div><div class="kpi-val"><span>$27.2M</span></div><div class="kpi-delta up">↑ $4.1M por optimización</div></div>
+    <div class="kpi"><div class="kpi-label">Costo ociosidad QC</div><div class="kpi-val"><span>$0</span></div><div class="kpi-delta up">↓ desde $1.24M/mes</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-label">Utilización de recursos por turno</div>
+      <div class="chart-bar-row"><div class="chart-bar-label">Línea 1 — Mañana</div><div class="chart-bar-track"><div class="chart-bar-fill green" style="width:82%">82%</div></div></div>
+      <div class="chart-bar-row"><div class="chart-bar-label">Línea 1 — Tarde</div><div class="chart-bar-track"><div class="chart-bar-fill green" style="width:79%">79%</div></div></div>
+      <div class="chart-bar-row"><div class="chart-bar-label">Línea 2 — Mañana</div><div class="chart-bar-track"><div class="chart-bar-fill green" style="width:94%">94%</div></div></div>
+      <div class="chart-bar-row"><div class="chart-bar-label">Línea 2 — Tarde</div><div class="chart-bar-track"><div class="chart-bar-fill amber" style="width:88%">88%</div></div></div>
+      <div style="margin-top:12px; font-size:11px; color:rgba(255,255,255,0.25);">Antes de optimización: L2 promedio 66% · Después: 91%</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Alertas operativas del modelo</div>
+      <div class="alert-row green"><div class="alert-dot green"></div>QC Línea 2: cuello de botella resuelto — tiempo de espera 0 min</div>
+      <div class="alert-row green"><div class="alert-dot green"></div>Producción L2 dentro del plan por primera vez en 3 meses</div>
+      <div class="alert-row amber"><div class="alert-dot amber"></div>Soldadura L2: utilización al 88% — monitorear en turno tarde</div>
+      <div class="alert-row amber"><div class="alert-dot amber"></div>Si se agrega turno nocturno, evaluar capacidad de mantenimiento</div>
+      <div style="margin-top:16px; padding:14px; background:rgba(29,158,117,0.08); border:1px solid rgba(29,158,117,0.2); border-radius:8px;">
+        <div style="font-size:11px; color:var(--green-m); letter-spacing:0.06em; margin-bottom:6px;">CONCLUSIÓN DEL PROYECTO</div>
+        <div style="font-size:13px; color:rgba(255,255,255,0.7); line-height:1.55;">Inversión en diagnóstico Ainova: <strong style="color:white;">$X</strong>. Recupero mensual identificado: <strong style="color:var(--green-m);">$4.1M</strong>. ROI del proyecto en <strong style="color:white;">menos de 15 días.</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<div class="bottom-nav">
+  <button class="btn btn-ghost" id="btnPrev" onclick="prev()" style="visibility:hidden">← Anterior</button>
+  <span class="step-indicator" id="stepInd">Paso 1 de 5</span>
+  <button class="btn btn-primary" id="btnNext" onclick="next()">Siguiente →</button>
+</div>
+
+<script>
+let current = 1;
+const total = 5;
+
+function goTo(n) {
+  document.getElementById('panel-' + current).classList.remove('active');
+  document.getElementById('pill-' + current).classList.remove('active');
+  current = n;
+  document.getElementById('panel-' + current).classList.add('active');
+  document.getElementById('pill-' + current).classList.add('active');
+  document.getElementById('stepInd').textContent = 'Paso ' + current + ' de ' + total;
+  document.getElementById('btnPrev').style.visibility = current > 1 ? 'visible' : 'hidden';
+  document.getElementById('btnNext').textContent = current === total ? 'Reiniciar demo' : 'Siguiente →';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+function next() { current < total ? goTo(current + 1) : goTo(1); }
+function prev() { if (current > 1) goTo(current - 1); }
+
+function calcular() {
+  const qc = parseInt(document.getElementById('sliderQC').value);
+  const turnos = parseInt(document.getElementById('sliderTurnos').value);
+  const vel = parseInt(document.getElementById('sliderVel').value);
+
+  document.getElementById('valQC').textContent = qc;
+  document.getElementById('valTurnos').textContent = turnos;
+  document.getElementById('valVel').textContent = vel + '%';
+
+  const esperaBase = 47;
+  const espera = qc === 1 ? esperaBase : qc === 2 ? 0 : 0;
+  const prodBase = 261;
+  const prodGain = qc >= 2 ? 59 : 0;
+  const velFactor = vel / 100;
+  const prod = Math.round((prodBase + prodGain) * velFactor * (turnos / 2));
+  const costoOp = (qc - 1) * 380000;
+  const ingreso = (qc >= 2) ? Math.round(prodGain * velFactor * turnos * 30 * 3120 / 1000) * 1000 : 0;
+  const neto = ingreso - costoOp;
+
+  document.getElementById('rProd').textContent = prod;
+  document.getElementById('rProdSub').textContent = qc >= 2 ? 'unidades — cuello resuelto' : 'unidades (situación actual)';
+  document.getElementById('rEspera').textContent = espera > 0 ? espera + ' min' : '0 min';
+  document.getElementById('rEspera').className = 'result-val ' + (espera > 0 ? 'red' : 'green');
+  document.getElementById('rEsperaSub').textContent = espera > 0 ? 'por turno · cuello activo' : '✓ cuello de botella resuelto';
+  document.getElementById('rCosto').textContent = costoOp > 0 ? '$' + costoOp.toLocaleString('es-AR') : '$0';
+  document.getElementById('rIngreso').textContent = ingreso > 0 ? '+$' + ingreso.toLocaleString('es-AR') : '$0';
+  document.getElementById('rIngresoSub').textContent = ingreso > 0 ? 'recuperado por mes' : 'sin cambios';
+
+  const netoCard = document.getElementById('rROICard');
+  const wow = document.getElementById('rWow');
+  const netoEl = document.getElementById('rNeto');
+  const netoSub = document.getElementById('rNetoSub');
+
+  if (qc === 1) {
+    netoCard.className = 'result-card neutral';
+    wow.textContent = 'ESTADO ACTUAL';
+    wow.style.background = 'rgba(255,255,255,0.15)';
+    netoEl.textContent = '–';
+    netoEl.className = 'result-val white';
+    netoSub.textContent = 'Sin cambios. La planta opera con 23% menos de capacidad.';
+  } else if (neto > 0) {
+    netoCard.className = 'result-card highlight-big positive';
+    wow.textContent = '✓ RENTABLE';
+    wow.style.background = 'var(--green)';
+    netoEl.textContent = '+$' + neto.toLocaleString('es-AR') + '/mes';
+    netoEl.className = 'result-val green';
+    netoSub.textContent = 'El ingreso recuperado supera el costo del operario. ROI positivo desde el primer mes.';
+  } else {
+    netoCard.className = 'result-card neutral';
+    wow.textContent = 'ANALIZAR';
+    wow.style.background = 'rgba(186,117,23,0.6)';
+    netoEl.textContent = '$' + neto.toLocaleString('es-AR') + '/mes';
+    netoEl.className = 'result-val red';
+    netoSub.textContent = 'El costo supera el ingreso en este escenario. Revisá la combinación de variables.';
+  }
+}
+calcular();
+</script>
+</body>
+</html>
