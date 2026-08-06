@@ -210,7 +210,33 @@
   .footer-links a:hover { color: rgba(255,255,255,0.7); }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
-  .reveal { opacity: 1; }
+
+  /* Scroll reveal */
+  .reveal-target { opacity: 0; transform: translateY(28px); transition: opacity 0.7s cubic-bezier(.16,.8,.3,1), transform 0.7s cubic-bezier(.16,.8,.3,1); }
+  .reveal-target.revealed { opacity: 1; transform: none; }
+  .problema-item:nth-child(1), .servicio-card:nth-child(1), .proceso-step:nth-child(1), .sector-card:nth-child(1), .kpi-card:nth-child(1) { transition-delay: 0s; }
+  .problema-item:nth-child(2), .servicio-card:nth-child(2), .proceso-step:nth-child(2), .sector-card:nth-child(2), .kpi-card:nth-child(2) { transition-delay: .08s; }
+  .problema-item:nth-child(3), .servicio-card:nth-child(3), .proceso-step:nth-child(3), .sector-card:nth-child(3), .kpi-card:nth-child(3) { transition-delay: .16s; }
+  .problema-item:nth-child(4), .servicio-card:nth-child(4), .proceso-step:nth-child(4), .sector-card:nth-child(4), .kpi-card:nth-child(4) { transition-delay: .24s; }
+  .kpi-card:nth-child(5) { transition-delay: .32s; }
+
+  /* Grain texture overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 999; pointer-events: none;
+    opacity: 0.035; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* Section label accent */
+  .section-label { display: inline-flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; width: 18px; height: 1px; background: currentColor; }
+
+  /* Hero orbit motif */
+  .hero-orbit { position: absolute; top: 14%; right: 7%; width: 240px; height: 240px; z-index: 0; animation: heroOrbit 22s linear infinite; }
+  .hero-orbit::before { content: ''; position: absolute; inset: 0; border: 1px solid rgba(29,158,117,0.14); border-radius: 50%; }
+  .hero-orbit::after { content: ''; position: absolute; top: -3px; left: 50%; transform: translateX(-50%); width: 7px; height: 7px; border-radius: 50%; background: var(--green-mid); box-shadow: 0 0 16px rgba(93,202,165,0.65); }
+  @keyframes heroOrbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
   @media (max-width: 900px) {
     nav { padding: 0 24px; }
@@ -218,6 +244,7 @@
     section { padding: 72px 24px; }
     .hero { padding: 100px 24px 80px; }
     .hero-stats { right: 24px; bottom: 40px; gap: 28px; }
+    .hero-orbit { display: none; }
     .problema-grid, .proceso-grid, .nosotros-grid, .contacto-grid { grid-template-columns: 1fr; gap: 48px; }
     .servicios-grid { grid-template-columns: 1fr; }
     .servicios-header { grid-template-columns: 1fr; gap: 24px; }
@@ -253,6 +280,7 @@
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
+  <div class="hero-orbit"></div>
   <div class="hero-content">
     <div class="hero-eyebrow">Córdoba · Argentina</div>
     <h1 class="hero-title">Ingeniería de procesos<br>y datos, <em>integrados.</em></h1>
@@ -277,33 +305,33 @@
 
 <!-- EL PROBLEMA -->
 <section class="problema">
-  <div class="section-label">El problema que resolvemos</div>
-  <h2 class="section-title">Dos mundos separados<br>que deberían hablar.</h2>
-  <p class="section-sub">En la mayoría de las empresas, el ingeniero gestiona procesos y el economista gestiona el dinero. Con herramientas distintas, modelos distintos y reuniones semanales donde los números nunca coinciden.</p>
+  <div class="section-label reveal-target">El problema que resolvemos</div>
+  <h2 class="section-title reveal-target">Dos mundos separados<br>que deberían hablar.</h2>
+  <p class="section-sub reveal-target">En la mayoría de las empresas, el ingeniero gestiona procesos y el economista gestiona el dinero. Con herramientas distintas, modelos distintos y reuniones semanales donde los números nunca coinciden.</p>
   <div class="problema-grid">
     <div class="problema-items">
-      <div class="problema-item">
+      <div class="problema-item reveal-target">
         <div class="problema-num">01</div>
         <div class="problema-text">
           <h4>El cronograma no impacta el flujo de caja</h4>
           <p>Los retrasos operativos se detectan tarde y su impacto financiero se calcula manualmente, cuando ya es demasiado tarde para actuar.</p>
         </div>
       </div>
-      <div class="problema-item">
+      <div class="problema-item reveal-target">
         <div class="problema-num">02</div>
         <div class="problema-text">
           <h4>Recursos compartidos sin visibilidad cruzada</h4>
           <p>Un equipo que se retrasa en un proyecto afecta a toda la cartera, pero nadie tiene esa visibilidad en tiempo real.</p>
         </div>
       </div>
-      <div class="problema-item">
+      <div class="problema-item reveal-target">
         <div class="problema-num">03</div>
         <div class="problema-text">
           <h4>Decisiones sin escenarios</h4>
           <p>¿Se puede aumentar la producción sin invertir en nuevos equipos? ¿Cuál es la capacidad máxima real del sistema? ¿Qué pasa si aumenta la demanda un 20%? Con un gemelo digital, estas preguntas se responden antes de tomar cualquier decisión.</p>
         </div>
       </div>
-      <div class="problema-item">
+      <div class="problema-item reveal-target">
         <div class="problema-num">04</div>
         <div class="problema-text">
           <h4>Excel como única fuente de verdad</h4>
@@ -311,7 +339,7 @@
         </div>
       </div>
     </div>
-    <div class="problema-visual">
+    <div class="problema-visual reveal-target">
       <div class="problema-visual-label">Cómo conectamos los dos mundos</div>
       <div class="bridge-diagram">
         <div class="bridge-col left-col">
@@ -354,31 +382,31 @@
 <section class="servicios" id="servicios">
   <div class="servicios-header">
     <div>
-      <div class="section-label">Servicios</div>
-      <h2 class="section-title">Lo que hacemos<br>por tu empresa.</h2>
+      <div class="section-label reveal-target">Servicios</div>
+      <h2 class="section-title reveal-target">Lo que hacemos<br>por tu empresa.</h2>
     </div>
-    <p class="section-sub">Cuatro servicios diseñados para conectar la operación con las finanzas y convertir datos en decisiones concretas.</p>
+    <p class="section-sub reveal-target">Cuatro servicios diseñados para conectar la operación con las finanzas y convertir datos en decisiones concretas.</p>
   </div>
   <div class="servicios-grid">
-    <div class="servicio-card">
+    <div class="servicio-card reveal-target">
       <div class="servicio-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>
       <h3>Diagnóstico de procesos</h3>
       <p>Relevamiento y simulación de tu operación actual. Identificamos cuellos de botella, ineficiencias y su impacto económico real antes de proponer cualquier cambio.</p>
       <div class="servicio-tags"><span class="tag">Simulación</span><span class="tag">Análisis de cuellos</span><span class="tag">Impacto económico</span></div>
     </div>
-    <div class="servicio-card">
+    <div class="servicio-card reveal-target">
       <div class="servicio-icon"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18"/></svg></div>
       <h3>Planificación integrada de operaciones</h3>
       <p>Modelo donde ventas, producción, recursos, procesos y finanzas comparten una única fuente de verdad dinámica. Escenarios en tiempo real para reuniones de directorio.</p>
       <div class="servicio-tags"><span class="tag">Planificación de ventas</span><span class="tag">Escenarios</span><span class="tag">Multidimensional</span></div>
     </div>
-    <div class="servicio-card">
+    <div class="servicio-card reveal-target">
       <div class="servicio-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8l3 3 2-2 3 3"/></svg></div>
       <h3>Dashboard operativo-financiero</h3>
       <p>KPIs operativos y financieros en un único panel, actualizado automáticamente desde el modelo de simulación. Operaciones y dirección financiera, desde el mismo lugar.</p>
       <div class="servicio-tags"><span class="tag">Power BI</span><span class="tag">Tiempo real</span><span class="tag">KPIs integrados</span></div>
     </div>
-    <div class="servicio-card">
+    <div class="servicio-card reveal-target">
       <div class="servicio-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
       <h3>Evaluación de inversiones</h3>
       <p>Análisis de proyectos de inversión con modelo financiero alimentado por simulación de procesos. Sabé si conviene invertir antes de comprometer capital.</p>
@@ -389,35 +417,35 @@
 
 <!-- CÓMO TRABAJAMOS -->
 <section class="proceso" id="proceso">
-  <div class="section-label">Cómo trabajamos</div>
-  <h2 class="section-title">Un proceso claro,<br>resultados medibles.</h2>
+  <div class="section-label reveal-target">Cómo trabajamos</div>
+  <h2 class="section-title reveal-target">Un proceso claro,<br>resultados medibles.</h2>
   <div class="proceso-grid">
     <div class="proceso-steps">
-      <div class="proceso-step">
+      <div class="proceso-step reveal-target">
         <div class="paso-num">01</div>
         <div class="paso-content"><h4>Diagnóstico inicial</h4><p>Entendemos tu operación, tus datos disponibles y el problema que querés resolver. Sin vender soluciones antes de entender el problema.</p></div>
       </div>
-      <div class="proceso-step">
+      <div class="proceso-step reveal-target">
         <div class="paso-num">02</div>
         <div class="paso-content"><h4>Modelo de simulación</h4><p>Modelamos el proceso productivo con recursos reales, duraciones y variabilidad. Generamos datos estructurados que reflejan el comportamiento real del sistema.</p></div>
       </div>
-      <div class="proceso-step">
+      <div class="proceso-step reveal-target">
         <div class="paso-num">03</div>
         <div class="paso-content"><h4>Integración financiera</h4><p>Conectamos la simulación con el modelo económico: flujo de caja, costos por recurso, escenarios de decisión. Un solo modelo que habla el idioma de la operación y el de las finanzas.</p></div>
       </div>
-      <div class="proceso-step">
+      <div class="proceso-step reveal-target">
         <div class="paso-num">04</div>
         <div class="paso-content"><h4>Dashboard y entrega</h4><p>El cliente recibe un panel que puede usar en sus reuniones. Cuando algo cambia en la operación, el modelo financiero se actualiza solo.</p></div>
       </div>
     </div>
-    <div class="proceso-visual">
+    <div class="proceso-visual reveal-target">
       <div class="visual-label">Resultados típicos de un proyecto</div>
       <div class="visual-kpi">
-        <div class="kpi-card"><div class="kpi-val"><span>Decisiones operativas más rápidas y fundamentadas</span></div></div>
-        <div class="kpi-card"><div class="kpi-val"><span>Mayor capacidad para evaluar escenarios en tiempo real</span></div></div>
-        <div class="kpi-card"><div class="kpi-val"><span>Identificación de ineficiencias y cuellos ocultos</span></div></div>
-        <div class="kpi-card"><div class="kpi-val"><span>Un único modelo que conecta ingeniería y finanzas</span></div></div>
-        <div class="kpi-card accent">
+        <div class="kpi-card reveal-target"><div class="kpi-val"><span>Decisiones operativas más rápidas y fundamentadas</span></div></div>
+        <div class="kpi-card reveal-target"><div class="kpi-val"><span>Mayor capacidad para evaluar escenarios en tiempo real</span></div></div>
+        <div class="kpi-card reveal-target"><div class="kpi-val"><span>Identificación de ineficiencias y cuellos ocultos</span></div></div>
+        <div class="kpi-card reveal-target"><div class="kpi-val"><span>Un único modelo que conecta ingeniería y finanzas</span></div></div>
+        <div class="kpi-card accent reveal-target">
           <div class="kpi-val">"¿Cuánto cuesta ese retraso?" → respuesta en segundos.</div>
           <div class="kpi-desc">La pregunta más común que nuestros clientes ya no tienen que esperar días para responder.</div>
         </div>
@@ -428,17 +456,23 @@
 
 <!-- NOSOTROS -->
 <section class="nosotros" id="nosotros">
-  <div class="section-label">El equipo</div>
-  <h2 class="section-title">Ingeniería<br>y economía.</h2>
+  <div class="section-label reveal-target">El equipo</div>
+  <h2 class="section-title reveal-target">Ingeniería<br>y economía.</h2>
   <div class="nosotros-grid">
-    <div class="nosotros-text">
+    <div class="nosotros-text reveal-target">
       <p>Ainova nació de una pregunta simple: ¿por qué el ingeniero y el economista de una misma empresa nunca trabajan sobre la misma información?</p>
       <p>Somos un equipo de economistas especializados en análisis de datos y modelos financieros, e ingenieros expertos en procesos productivos. Decidimos construir el puente que conecta ambos mundos.</p>
       <p>No somos una consultora tecnológica ni una consultora financiera tradicional. Somos el punto donde la simulación de procesos se transforma en decisiones de negocio.</p>
     </div>
     <div class="team-cards">
-      <div class="team-card">
-        <div class="team-avatar"></div>
+      <div class="team-card reveal-target">
+        <div class="team-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
+            <circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/>
+            <path d="M2.5 20c0-2.8 2.6-5 5.5-5s5.5 2.2 5.5 5"/>
+            <path d="M10.5 20c0-2.8 2.6-5 5.5-5s5.5 2.2 5.5 5"/>
+          </svg>
+        </div>
         <div class="team-info">
           <h4>Equipo Interdisciplinario</h4>
           <div class="role">Economía, Datos & Ingeniería de Procesos</div>
@@ -451,20 +485,20 @@
 
 <!-- SECTORES -->
 <section class="sectores">
-  <div class="section-label">Sectores</div>
-  <h2 class="section-title">Dónde trabajamos.</h2>
-  <p class="section-sub">Empresas con procesos productivos complejos que necesitan que sus decisiones financieras reflejen la realidad operativa.</p>
+  <div class="section-label reveal-target">Sectores</div>
+  <h2 class="section-title reveal-target">Dónde trabajamos.</h2>
+  <p class="section-sub reveal-target">Empresas con procesos productivos complejos que necesitan que sus decisiones financieras reflejen la realidad operativa.</p>
   <div class="sectores-grid">
-    <div class="sector-card"><span class="sector-icon">🏗️</span><h4>Construcción</h4><p>Cartera de obras, recursos compartidos, certificaciones y penalidades.</p></div>
-    <div class="sector-card"><span class="sector-icon">🏭</span><h4>Manufactura</h4><p>Plantas productivas, turnos, capacidad y planificación de la demanda.</p></div>
-    <div class="sector-card"><span class="sector-icon">🌾</span><h4>Agroindustria</h4><p>Estacionalidad, almacenamiento, procesado y comercialización integrados.</p></div>
-    <div class="sector-card"><span class="sector-icon">🚛</span><h4>Logística</h4><p>Flota, rutas, centros de distribución y costos operativos en tiempo real.</p></div>
+    <div class="sector-card reveal-target"><span class="sector-icon">🏗️</span><h4>Construcción</h4><p>Cartera de obras, recursos compartidos, certificaciones y penalidades.</p></div>
+    <div class="sector-card reveal-target"><span class="sector-icon">🏭</span><h4>Manufactura</h4><p>Plantas productivas, turnos, capacidad y planificación de la demanda.</p></div>
+    <div class="sector-card reveal-target"><span class="sector-icon">🌾</span><h4>Agroindustria</h4><p>Estacionalidad, almacenamiento, procesado y comercialización integrados.</p></div>
+    <div class="sector-card reveal-target"><span class="sector-icon">🚛</span><h4>Logística</h4><p>Flota, rutas, centros de distribución y costos operativos en tiempo real.</p></div>
   </div>
 </section>
 
 <!-- CTA -->
 <section class="cta">
-  <div class="cta-content">
+  <div class="cta-content reveal-target">
     <h2>¿Tu empresa tiene<br><em>este problema?</em></h2>
     <p>Si tu equipo de ingeniería y tu equipo financiero trabajan desde datos distintos, podemos ayudarte. Empezamos con una conversación sin costo.</p>
     <div class="cta-actions">
@@ -478,10 +512,10 @@
 
 <!-- CONTACTO -->
 <section class="contacto" id="contacto">
-  <div class="section-label">Contacto</div>
-  <h2 class="section-title">Empecemos<br>con una conversación.</h2>
+  <div class="section-label reveal-target">Contacto</div>
+  <h2 class="section-title reveal-target">Empecemos<br>con una conversación.</h2>
   <div class="contacto-grid">
-    <div class="contacto-info">
+    <div class="contacto-info reveal-target">
       <h3>Sin reuniones de ventas.<br>Sin pitch. Solo una charla.</h3>
       <p>Contanos qué problema tenés y en qué sector operás. Si podemos ayudarte, te lo decimos. Si no podemos, también.</p>
       <div class="contacto-puntos">
@@ -514,7 +548,7 @@
         </div>
       </div>
     </div>
-    <div class="contact-form">
+    <div class="contact-form reveal-target">
       <div class="form-row">
         <div class="form-group"><label>Nombre</label><input type="text" id="f-nombre" placeholder="Tu nombre"></div>
         <div class="form-group"><label>Empresa</label><input type="text" id="f-empresa" placeholder="Tu empresa"></div>
@@ -559,6 +593,17 @@
   // Nav scroll
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 20));
+
+  // Scroll reveal
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal-target').forEach(el => revealObserver.observe(el));
 
   // El destinatario está codificado — no aparece en el HTML
   function _dest() {
