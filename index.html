@@ -49,9 +49,14 @@
   .nav-links a:hover { color: var(--ink); }
   .nav-cta { background: var(--green) !important; color: var(--white) !important; padding: 10px 22px; border-radius: 8px; font-weight: 500 !important; transition: background 0.2s !important; }
   .nav-cta:hover { background: var(--green-dark) !important; }
+  .nav-toggle { display: none; flex-direction: column; justify-content: center; gap: 5px; width: 36px; height: 36px; background: none; border: none; cursor: pointer; padding: 0; flex-shrink: 0; }
+  .nav-toggle span { display: block; width: 100%; height: 2px; background: var(--ink); border-radius: 2px; transition: transform 0.25s ease, opacity 0.2s ease; }
+  .nav-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-toggle.active span:nth-child(2) { opacity: 0; }
+  .nav-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
   /* HERO */
-  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 120px 48px 80px; position: relative; overflow: hidden; }
+  .hero { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; padding: 120px 48px 80px; position: relative; overflow: hidden; }
   .hero-bg { position: absolute; inset: 0; z-index: 0; background: radial-gradient(ellipse 60% 50% at 80% 30%, rgba(29,158,117,0.08) 0%, transparent 70%), radial-gradient(ellipse 40% 60% at 10% 80%, rgba(29,158,117,0.05) 0%, transparent 60%); }
   .hero-grid { position: absolute; inset: 0; z-index: 0; opacity: 0.03; background-image: linear-gradient(var(--ink) 1px, transparent 1px), linear-gradient(90deg, var(--ink) 1px, transparent 1px); background-size: 60px 60px; }
   .hero-content { position: relative; z-index: 1; max-width: 800px; }
@@ -192,7 +197,7 @@
   .contact-form { display: flex; flex-direction: column; gap: 16px; }
   .form-group { display: flex; flex-direction: column; gap: 6px; }
   .form-group label { font-size: 12px; font-weight: 500; color: var(--ink); letter-spacing: 0.04em; }
-  .form-group input, .form-group textarea, .form-group select { font-family: var(--sans); font-size: 14px; font-weight: 300; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; color: var(--ink); transition: border-color 0.2s; outline: none; resize: vertical; }
+  .form-group input, .form-group textarea, .form-group select { font-family: var(--sans); font-size: 16px; font-weight: 300; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; color: var(--ink); transition: border-color 0.2s; outline: none; resize: vertical; }
   .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--green); }
   .form-group textarea { min-height: 120px; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -259,6 +264,25 @@
     .bridge-col.right-col .bridge-col-header { text-align: left; }
     .bridge-center { flex-direction: row; justify-content: flex-start; padding: 4px 0; }
     .bridge-result { grid-template-columns: 1fr; }
+    .visual-kpi { grid-template-columns: 1fr; }
+    .kpi-card.accent { grid-column: span 1; }
+  }
+
+  @media (max-width: 680px) {
+    .nav-toggle { display: flex; }
+    .nav-links {
+      position: fixed; top: 68px; left: 0; right: 0; z-index: 99;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--white); border-bottom: 1px solid var(--border);
+      box-shadow: 0 12px 24px rgba(14,26,20,0.1);
+      max-height: 0; overflow: hidden; opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.2s ease;
+    }
+    .nav-links.open { max-height: 320px; opacity: 1; }
+    .nav-links a { padding: 16px 24px; border-bottom: 1px solid var(--border); width: 100%; }
+    .nav-links a.nav-cta { margin: 14px 24px; width: calc(100% - 48px); text-align: center; border-bottom: none; }
+    .sectores-grid { grid-template-columns: 1fr; }
+    .sector-card { text-align: left; padding: 24px; }
   }
 </style>
 </head>
@@ -271,7 +295,10 @@
     </div>
     <span class="nav-logo-name">Ainova</span>
   </a>
-  <div class="nav-links">
+  <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links" id="navLinks">
     <a href="#servicios">Servicios</a>
     <a href="#proceso">Cómo trabajamos</a>
     <a href="#nosotros">Nosotros</a>
@@ -596,6 +623,20 @@
   // Nav scroll
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 20));
+
+  // Mobile nav toggle
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.classList.toggle('active', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen);
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    navToggle.classList.remove('active');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }));
 
   // Scroll reveal
   const revealObserver = new IntersectionObserver((entries) => {
